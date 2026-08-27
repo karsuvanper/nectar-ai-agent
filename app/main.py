@@ -26,38 +26,16 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup lifespan that blocks Uvicorn until warmup finishes.
-
-    Ensures model loading and fastembed initializations happen inside lifespan
-    so health checks don't trigger premature shutdown, and Qdrant fallback
-    is handled gracefully.
-    """
-    logger.info("Lifespan startup: warming up models and Qdrant...")
-    # 1. Warmup embedding model (fastembed) - blocks until download finishes
+    # Startup warmup logic
     try:
         from app.rag.vector_store import warmup_embedding
-        warmup_embedding()
-        logger.info("Lifespan: embedding model warmup complete")
-    except Exception as e:
-        logger.warning(f"Lifespan: embedding warmup skipped/failed: {e}")
-    # 2. Warmup reranker model - blocks until download finishes
-    try:
         from app.rag.retriever import warmup_reranker
+        warmup_embedding()
         warmup_reranker()
-        logger.info("Lifespan: reranker warmup complete")
     except Exception as e:
-        logger.warning(f"Lifespan: reranker warmup skipped/failed: {e}")
-    # 3. Auto-index HVAC docs (uses Qdrant in-memory fallback if external unavailable)
-    try:
-        from app.rag.vector_store import index_documents
-        with open("app/rag/docs/hvac_faq.txt", "r", encoding="utf-8") as f:
-            documents = [line.strip() for line in f.readlines() if line.strip()]
-        index_documents(documents)
-        logger.info(f"Lifespan: auto-indexed {len(documents)} documents")
-    except Exception as e:
-        logger.warning(f"Auto-index skipped (Qdrant offline or warmup incomplete): {e}")
-    yield
-    logger.info("Lifespan shutdown")
+        print(f"Warmup warning: {e}")
+    
+    yield  # Essential: yield control back to FastAPI to keep server running
 
 app = FastAPI(
     title="Nectar Intelligent Facility Operations AI Agent",
@@ -73,17 +51,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Keep legacy startup event for backward compatibility (lifespan already handles warmup)
-@app.on_event("startup")
-def auto_index_legacy():
-    try:
-        from app.rag.vector_store import index_documents
-        with open("app/rag/docs/hvac_faq.txt", "r", encoding="utf-8") as f:
-            documents = [line.strip() for line in f.readlines() if line.strip()]
-        index_documents(documents)
-    except Exception as e:
-        logging.getLogger(__name__).warning(f"Auto-index (legacy) skipped: {e}")
 
 # Thin API wrappers that delegate to the centralized MCP tool functions.
 # Business logic lives in app/mcp_tools/telemetry.py and app/mcp_tools/actions.py.
