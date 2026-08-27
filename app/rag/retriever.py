@@ -1,16 +1,48 @@
 import os
+import logging
 from typing import List
 import numpy as np
-
-from sentence_transformers import CrossEncoder
 
 from app.rag.vector_store import search
 from app.config import config
 
+logger = logging.getLogger(__name__)
 
-# Initialize CrossEncoder reranker model
-# This model is fine-tuned for passage reranking on MS-MARCO dataset
-reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+# Lazy CrossEncoder reranker - wrapped for lifespan warmup so Uvicorn blocks until download finishes
+_reranker = None
+
+
+def get_reranker():
+    """Lazy loader for CrossEncoder. Blocks until model download completes when called from lifespan."""
+    global _reranker
+    if _reranker is not None:
+        return _reranker
+    try:
+        from sentence_transformers import CrossEncoder
+        logger.info("Loading reranker model cross-encoder/ms-marco-MiniLM-L-6-v2 ...")
+        _reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+        logger.info("Reranker model loaded")
+    except Exception as e:
+        logger.warning(f"Failed to load reranker model: {e}")
+        raise
+    return _reranker
+
+
+def warmup_reranker():
+    """Explicit warmup hook for FastAPI lifespan."""
+    return get_reranker()
+
+
+# Backward-compatible proxy so `from app.rag.retriever import reranker` still works but lazily
+class _LazyRerankerProxy:
+    def __getattr__(self, name):
+        return getattr(get_reranker(), name)
+
+    def predict(self, *args, **kwargs):
+        return get_reranker().predict(*args, **kwargs)
+
+
+reranker = _LazyRerankerProxy()
 
 
 def query_rag_agent(user_query: str, top_k: int = 3) -> str:
@@ -30,7 +62,8 @@ def query_rag_agent(user_query: str, top_k: int = 3) -> str:
     pair_list = [[user_query, doc_text] for doc_text in chunk_texts]
 
     # CrossEncoder predicts relevance scores for each pair
-    rerank_scores = reranker.predict(pair_list)
+    model = get_reranker()
+    rerank_scores = model.predict(pair_list)
 
     # rerank_scores is a numpy array of shape (n_candidates,)
     # Step D: Sort candidates by CrossEncoder score in descending order
