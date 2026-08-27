@@ -1,0 +1,385 @@
+SECTION 1: HVAC OPERATING PROCEDURES
+
+1. STANDARD START SEQUENCE:
+   - Verify all safety interlocks are closed and LOTO tags are removed.
+   - Ensure thermostat is in "AUTO" mode with appropriate temperature setpoint.
+   - Confirm outdoor air dampers are in the minimum position.
+   - Start chiller or boiler according to manufacturer's sequence of operation.
+   - Monitor equipment gauges and amperage during ramp-up.
+   - Allow system to stabilize before adjusting setpoints.
+
+2. STANDARD STOP SEQUENCE:
+   - Gradually reduce load before shutting down equipment.
+   - Stop cooling/heating source first, then circulation pumps.
+   - Verify equipment has come to complete stop before securing power.
+   - Record run-time hours and any abnormal observations in logbook.
+
+3. SEASONAL MODE TRANSITIONS:
+   - Spring Transition: Switch from heating to cooling mode. Change chilled water setpoint from 45°F to 44.6°F. Verify changeover valves shift correctly. Remove any heating system interlocks.
+   - Fall Transition: Switch from cooling to heating mode. Change chilled water setpoint to maintain space temperature above 70°F. Activate heating systems and verify proper operation before reducing cooling capacity.
+
+4. NORMAL OPERATION MONITORING:
+   - Check temperature differentials across heat exchangers weekly.
+   - Monitor pressure readings against design specifications.
+   - Review energy consumption trends for anomaly detection.
+   - Ensure all control system setpoints are within approved ranges.
+
+SECTION 2: CHILLER MANUALS
+
+CHILLER-01 OPERATIONAL PARAMETERS:
+- Unit Type: Water-cooled centrifugal chiller
+- Capacity: 100 kW (nominal)
+- Refrigerant: R-134a (charge: 150 lbs, sight glass visibility required)
+- Oil Type: Mineral oil (ISO VG 32), capacity: 25 gallons
+- Electrical: 460V/3ph/60Hz, motor: 150 HP
+
+CHILLED WATER SETPOINTS:
+- Design Chilled Water Outlet Temperature: 7°C (44.6°F)
+- Design Chilled Water Inlet Temperature: 12°C (53.6°F)
+- Approved Operating Range: 6°C to 12°C (42.8°F to 53.6°F)
+- Delta T (inlet - outlet): minimum 5°C (9°F), optimal 5-8°C (9-14°F)
+- Flow Rate: 150 L/s (300 GPM) design, minimum 120 L/s (240 GPM)
+
+CONDENSER WATER SETPOINTS:
+- Design Condenser Water Outlet Temperature: 29°C (84.2°F)
+- Design Condenser Water Inlet Temperature: 24°C (75.2°F)
+- Approved Operating Range: 24°C to 32°C (75.2°F to 89.6°F)
+- Flow Rate: 250 L/s (500 GPM) design, minimum 200 L/s (400 GPM)
+
+OPERATIONAL LIMITS:
+- Minimum approach temperature: 3°C (5.4°F)
+- Maximum condenser water temperature: 35°C (95°F)
+- Minimum condenser water temperature: 15°C (59°F)
+- Chiller shall not start if approach temperature < 2°C (3.6°F)
+
+REFRIGERANT SPECIFICATIONS:
+- R-134a operating pressure range: 1.5 bar to 12 bar (22 psi to 174 psi)
+- Superheat target: 5°C to 15°C (9°F to 27°F)
+- Subcooling target: 5°C to 10°C (9°F to 18°F)
+- Leak detection threshold: 0.5% system charge per year
+- Recovery/recycle procedures per EPA Section 608
+
+CHILLER-02 OPERATIONAL PARAMETERS:
+- Unit Type: Water-cooled screw chiller
+- Capacity: 150 kW (nominal)
+- Refrigerant: R-410A (charge: 250 lbs, sight glass visibility required)
+- Oil Type: POE oil (ester-based), capacity: 40 gallons
+- Electrical: 460V/3ph/60Hz, motor: 200 HP
+
+CHILLED WATER SETPOINTS:
+- Design Chilled Water Outlet Temperature: 7°C (44.6°F)
+- Design Chilled Water Inlet Temperature: 12°C (53.6°F)
+- Approved Operating Range: 6°C to 12°C (42.8°F to 53.6°F)
+- Delta T (inlet - outlet): minimum 5°C (9°F), optimal 5-8°C (9-14°F)
+- Flow Rate: 225 L/s (450 GPM) design, minimum 180 L/s (360 GPM)
+
+CONDENSER WATER SETPOINTS:
+- Design Condenser Water Outlet Temperature: 29°C (84.2°F)
+- Design Condenser Water Inlet Temperature: 24°C (75.2°F)
+- Approved Operating Range: 24°C to 32°C (75.2°F to 89.6°F)
+- Flow Rate: 375 L/s (750 GPM) design, minimum 300 L/s (600 GPM)
+
+SECTION 3: AHU TROUBLESHOOTING GUIDES
+
+AHU LOW AIRFLOW TROUBLESHOOTING:
+1. Filter Condition:
+   - Check filter differential pressure gauge.
+   - Replace filters when differential pressure exceeds 0.5 inches WG (125 Pa).
+   - Recommended replacement interval: every 3 months or per facility policy.
+
+2. Belt Tension:
+   - Inspect V-belts for cracks, fraying, or glazing.
+   - Measure belt deflection: should deflect 1/2 inch (12.7 mm) under 5 lb (2.2 kg) force.
+   - Adjust tension using motor base sliders to manufacturer specifications.
+   - Replace belts if tension cannot be maintained within ±10% of spec.
+
+3. Filter Replacement Differential Pressure Limits:
+   - New filter initial pressure drop: ≤ 0.1 inches WG (25 Pa)
+   - Filter replacement threshold: ≥ 0.5 inches WG (125 Pa)
+   - High-efficiency filters: replacement at ≥ 1.0 inches WG (250 Pa)
+   - Document pressure drop before and after replacement.
+
+4. Coil Condition:
+   - Inspect evaporator and condenser coils monthly.
+   - Clean coils when dust accumulation exceeds 1/16 inch (1.6 mm).
+   - Use compressed air or mild detergent solution for cleaning.
+   - Verify coil fin alignment after cleaning.
+
+5. Fan Motor and VFD:
+   - Check motor amperage against nameplate rating.
+   - VFD fault codes: refer to manufacturer troubleshooting guide.
+   - Verify VFD programming matches motor nameplate RPM and voltage.
+
+SECTION 4: MAINTENANCE PROCEDURES
+
+PREVENTATIVE MAINTENANCE SCHEDULES:
+
+1. DAILY CHECKS:
+   - Visual equipment inspection for leaks, unusual noises, or vibrations.
+   - Check pressure and temperature gauge readings.
+   - Verify control system operation and alarm status.
+   - Log run-time hours and any abnormal conditions.
+
+2. WEEKLY CHECKS:
+   - Inspect filter condition and record differential pressure.
+   - Check belt tension on all belt-driven equipment.
+   - Verify VFD operation and parameter settings.
+   - Test emergency stop functionality.
+
+3. MONTHLY COIL CLEANING:
+   - Inspect evaporator and condenser coils.
+   - Clean coils when dust accumulation exceeds 1/16 inch (1.6 mm).
+   - Use compressed air (max 30 psi) or mild detergent solution.
+   - Rinse thoroughly and allow to dry before restart.
+   - Verify coil fin straightening if damaged.
+
+4. BEARING LUBRICATION:
+   - Lubricate bearings per manufacturer schedule (typically every 2,000-5,000 operating hours).
+   - Use specified grease type and grade (e.g., Mobil Polyrex EM for chiller bearings).
+   - Avoid over-lubrication: fill bearing to 1/3 to 1/2 of cavity space.
+   - Record lubrication date, grease type, and amount applied.
+   - Replace bearings if overheating, excessive noise, or vibration persists.
+
+5. QUARTERLY INSPECTIONS:
+   - Check belt alignment and condition.
+   - Inspect fan blades for damage or imbalance.
+   - Verify damper actuation and linkages.
+   - Test safety controls and interlocks.
+
+6. SEMI-ANNUAL MAINTENANCE:
+   - Comprehensive chiller system inspection.
+   - Refrigerant level check and leak detection.
+   - Oil analysis and sampling (if applicable).
+   - Heat exchanger performance testing.
+
+7. ANNUAL MAINTENANCE:
+   - Complete system overhaul per manufacturer recommendations.
+   - Calibrate all control sensors and instruments.
+   - Review and update maintenance records.
+   - Plan upcoming year's maintenance schedule.
+
+SECTION 5: SAFETY INSTRUCTIONS
+
+LOCKOUT/TAGOUT (LOTO) PROCEDURES:
+
+1. PREPARATION:
+   - Identify all energy sources: electrical, mechanical, hydraulic, pneumatic, thermal, chemical.
+   - Review equipment-specific LOTO procedures in maintenance manuals.
+   - Notify affected personnel of planned shutdown.
+
+2. SHUTDOWN:
+   - Sequence: Remove load, then stop equipment per normal stop sequence.
+   - Verify equipment has come to complete stop.
+
+3. ISOLATION:
+   - Identify and operate all energy isolation devices:
+     * Electrical: Circuit breakers, disconnect switches, control transformers.
+     * Mechanical: Valves, dampers, belt tension release.
+     * Hydraulic/Pneumatic: Pressure relief, valve closure.
+     * Thermal: Steam valve closure, fuel supply shutdown.
+   - Lock out each isolation device with individual personal lock.
+
+4. APPLICATION OF TAGS:
+   - Tag must include: employee name, reason for lockout, date/time, contact information.
+   - "DO NOT OPERATE" warning visible on each lock/tag.
+   - Never remove another person's lock or tag.
+
+5. ENERGY VERIFICATION:
+   - Attempt to start equipment to confirm isolation (with emergency stop ready).
+   - Verify zero energy state using appropriate testing equipment.
+   - Measure voltage/power confirmed de-energized before work begins.
+
+6. RE-ENERGIZATION:
+   - Verify all tools and personnel are clear of equipment.
+   - Remove locks and tags in reverse order of application.
+   - Notify affected personnel before restart.
+   - Monitor equipment during initial start-up.
+
+REFRIGERANT LEAK SAFETY PROTOCOLS:
+
+1. Detection:
+   - Electronic leak detector: sensitivity ≤ 0.1 oz/year (2.8 g/year).
+   - Soap solution test at joints and connections.
+   - Olfactory detection (only if refrigerant has distinctive odor).
+
+2. Immediate Actions:
+   - Evacuate area of unauthorized personnel.
+   - Increase ventilation to dilute refrigerant concentration.
+   - Monitor air quality: ASHRAE Standard 34 concentration limits.
+   - Post "Refrigerant Leak" warning signs at area entrance.
+
+3. Repair Procedures:
+   - Only certified EPA Section 608 technicians may handle refrigerants.
+   - Recover refrigerant using approved recovery machine.
+   - Repair leak per manufacturer specifications.
+   - Evacuate system to required vacuum level (500 microns Hg).
+   - Charge with correct refrigerant type and amount.
+   - Leak test repaired area before putting back into service.
+
+4. Reporting:
+   - Record leak quantity, location, and repair actions in logbook.
+   - Report leaks exceeding 15% of system charge annually to EPA.
+   - Maintain records for minimum 3 years per EPA requirements.
+
+EMERGENCY SHUTDOWNS:
+
+1. TRIGGER CONDITIONS:
+   - Fire or smoke near HVAC equipment.
+   - Refrigerant leak with high concentration.
+   - Electrical hazard or arc flash risk.
+   - Severe equipment vibration or unusual noise.
+   - Loss of control signals or safety interlocks.
+
+2. PROCEDURE:
+   - Activate emergency stop (E-stop) at local and central panels.
+   - Isolate all energy sources per LOTO procedures (if maintenance required).
+   - Evacuate affected area if necessary.
+   - Contact emergency services (fire department, hazmat) for refrigerant leaks or electrical fires.
+   - Document emergency event: time, conditions, actions taken, personnel involved.
+
+3. POST-EMERGENCY:
+   - Comprehensive equipment inspection before restart.
+   - Test all safety systems and controls.
+   - Review emergency response and update procedures if needed.
+   - Notify facility manager and safety officer.
+
+SECTION 6: EQUIPMENT SPECIFICATIONS
+
+CHILLER-01 SPECIFICATIONS:
+- Model: Centrifugal water-cooled chiller
+- Capacity: 100 kW (341,214 BTU/hr) nominal cooling
+- Cooling medium: Chilled water (Glycol mix: 10% for freeze protection)
+- Chilled water connection: 6-inch flanged inlet/outlet
+- Design pressure: 150 psig (chilled water), 150 psig (condenser water)
+- Operating temperature range: 42°F to 85°F chilled water exit
+- Refrigerant: R-134a, 150 lbs charge
+- Oil capacity: 25 gallons of ISO VG 32 mineral oil
+- Motor: 150 HP, 460V, 3-phase, 60Hz
+- Dimensions: 12' L x 4' W x 6' H (approx.)
+- Weight: 4,500 lbs (approx.)
+- Sound level: 85 dB(A) at 3 meters
+
+AHU-02 SPECIFICATIONS:
+- Unit Type: Air Handling Unit, vertical configuration
+- Capacity: 5,000 CFM (cubic feet per minute) design airflow
+- Static pressure: 2.0 inches WG (500 Pa) external static
+- Filter classification: MERV 13 (initial pressure drop ≤ 0.3 inches WG)
+- Cooling coil: 3-row direct expansion, 4.5 tons capacity
+- Heating coil: 2-row hot water, 80 MBH output
+- Blower type: Centrifugal, direct-drive motor
+- Motor: 5 HP, 460V, 3-phase, 60Hz
+- Dimensions: 8' L x 4' W x 8' H (approx.)
+- Weight: 2,200 lbs (approx.)
+- Supply duct: 18" diameter round
+- Return duct: 24" diameter round
+
+VALVE SPECIFICATIONS:
+- Control valves: Equal percentage globe valve, 2-inch NPS
+- Ball valves: 3-inch NPS, full port, FNPT ends
+- Pressure relief valves: Set at 150 psig, ASME B&PVC Section VIII
+- Solenoid valves: 24VAC, Normally Closed (NC) for chilled water flow
+- Butterfly valves: 4-inch NPS, lug type, wafer style
+- Material: Stainless steel (316) for chilled water, carbon steel for condenser water
+- Actuators: 24VAC or 24VDC motorized, 0-10V control signal
+- Valve torque: 20-30 in-lbs for 2-inch control valve
+
+PIPE SPECIFICATIONS:
+- Chilled water piping: Schedule 40, Type L copper, 2-inch NPS and larger
+- Condenser water piping: Schedule 40, black steel, 2-inch NPS and larger
+- Insulation: 1-inch foam pipe insulation, water vapor barrier
+- Hangers/clamps: Max 10 ft spacing, coated carbon steel
+
+SECTION 7: FACILITY POLICIES
+
+TEMPERATURE SETPOINT RANGES:
+- Occupied cooling mode: 70°F to 74°F (21°C to 23.3°C) average space temperature
+- Unoccupied cooling mode: 78°F to 85°F (25.6°C to 29.4°C) to reduce energy consumption
+- Occupied heating mode: 68°F to 72°F (20°C to 22.2°C) average space temperature
+- Unoccupied heating mode: 55°F to 60°F (12.8°C to 15.6°C) to prevent freeze-up
+- Domestic hot water: 120°F (49°C) maximum at point of use
+
+ESCALATION CONTACTS:
+- Level 1 (Immediate): On-call HVAC Technician - +1-555-0102
+- Level 2 (Within 30 min): Senior HVAC Technician - +1-555-0103
+- Level 3 (Within 1 hr): Controls Specialist - +1-555-0104
+- Level 4 (Within 2 hr): Facility Manager - +1-555-0140
+- Level 5 (Owner notification): Building Owner - +1-555-0150
+
+MAINTENANCE TICKET RULES:
+1. All maintenance requests require supervisor approval before ticket creation.
+2. Emergency tickets (safety risk, system-wide failure): 1-hour response target.
+3. High priority (partial system loss): 4-hour response target.
+4. Medium priority (affected system, alternative available): 24-hour response target.
+5. Low priority (cosmetic, minor adjustment): 5-day response target.
+6. Ticket closure requires: equipment tested, parts documented, logbook updated.
+7. No permanent modifications without facility manager sign-off.
+8. All tickets must be resolved within 30 days or escalated to management.
+
+ENERGY CONSERVATION POLICIES:
+- Setbacks required during unoccupied periods (nights, weekends, holidays).
+- Maximum chilled water temperature reset: 5°F increase allowed with occupancy sensor approval.
+- VFDs required on all pumps and fans over 5 HP.
+- Monthly energy consumption review by facilities team.
+- Energy savings recommendations submitted to management quarterly.
+
+SECTION 8: TROUBLESHOOTING FAQS
+
+COMMON ISSUES FAQ:
+
+Q: Why is the chiller not cooling below 50°F?
+A: Check chilled water setpoint, verify flow switch is closed, inspect control valve operation, ensure condenser water temperature is within design range (not exceeding 32°C/89.6°F). Low approach temperature may indicate restricted condenser water flow or fouled condenser coils.
+
+Q: AHU is short-cycling. What should I check?
+A: Check thermostat placement (away from heat sources), inspect control voltage wiring for interference, verify VFD programming, check filter differential pressure, ensure return air grille is unobstructed.
+
+Q: Water leaking from chiller basepan.
+A: Inspect condensate drain line for blockage, check condensate pump operation, verify drain pan is not overflowing, check for refrigerant line sweating (insulate suction line).
+
+Q: High energy consumption on AHU-02.
+A: Check if VFD is operating at partial speed unnecessarily, inspect filter condition (may need replacement), verify thermostat scheduling, look for duct leakage, check reheat coil operation.
+
+Q: Chiller trips on high discharge temperature.
+A: Verify condenser water flow is adequate, check condenser outlet temperature, inspect for non-condensables in refrigerant system, check oil level and condition, ensure cooling tower is operating properly.
+
+Q: AHU circuit breaker keeps tripping.
+A: Check motor amperage against nameplate (may indicate bearing failure or unbalanced voltage), inspect control circuit for shorts, verify VFD input voltage, check for restricted airflow (dirty filters/coils).
+
+NOISE DIAGNOSTIC FAQ:
+
+1. Rattling noise:
+   - Likely cause: Loose panels, access doors, or ductwork.
+   - Solution: Tighten all fasteners, secure access panels, check ductwork supports.
+
+2. Screeching or squealing:
+   - Likely cause: Worn fan belt, improper belt tension, failing motor bearings.
+   - Solution: Replace belt, adjust tension, lubricate or replace motor bearings.
+
+3. Banging or knocking:
+   - Likely cause: Water hammer in piping, loose piping supports, expanding/contracting ducts.
+   - Solution: Secure piping supports, install expansion joints, check for proper valve operation.
+
+4. Low-frequency humming:
+   - Likely cause: Motor operating outside design parameters, VFD carrier frequency issue, loose laminations.
+   - Solution: Verify motor load, adjust VFD parameters, tighten motor mounting bolts.
+
+SENSOR CALIBRATION GUIDES:
+
+1. Temperature Sensor (RTD/thermistor):
+   - Calibration reference: Ice point (0°C/32°F) and steam point (100°C/212°F).
+   - Frequency: Annually or per facility calibration policy.
+   - Procedure: Immerse sensor in controlled temperature baths, compare reading to reference thermometer, adjust DCS/SCADA if error > 0.5°F.
+
+2. Pressure Sensor (differential pressure transmitter):
+   - Calibration reference: Zero (no flow) and known reference pressure.
+   - Frequency: Annually.
+   - Procedure: Apply zero reference (vent to atmosphere), apply 25%, 50%, 75%, 100% of span, compare output (4-20 mA), adjust if error > 1% of span.
+
+3. Flow Meter (turbine or ultrasonic):
+   - Calibration reference: Reference flow measurement using calibrated meter.
+   - Frequency: Annually for turbine meters, biennial for ultrasonic.
+   - Procedure: Run test flow at multiple rates (25%, 50%, 75%, 100%), compare readings, calculate K-factor adjustment, apply to DCS.
+
+4. CO2 Sensor (IAQ control):
+   - Calibration reference: Fresh air (400 ppm) and calibrated span gas (typically 1000-2000 ppm).
+   - Frequency: Semi-annually.
+   - Procedure: Expose sensor to fresh air, zero adjustment, then expose to span gas, adjust reading to match certified gas concentration.

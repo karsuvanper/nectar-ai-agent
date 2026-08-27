@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # 1. Nectar AI FastAPI App (Voice, Router, MCP Tools, RAG Engine)
+  nectar-agent:
+    build: .
+    container_name: nectar_ai_agent
+    ports:
+      - "8002:8000"  # Dedicated Port for Nectar FastAPI Server
+    env_file:
+      - .env
+    environment:
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - .:/app
+    depends_on:
+      - qdrant
+
+  # 2. Isolated Qdrant Vector DB for Nectar Facility Knowledge Base
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: nectar_qdrant
+    ports:
+      - "6335:6333"  # Mapped to 6335 to avoid collision with OnePiece Qdrant (6333)
+      - "6336:6334"  # Mapped to 6336 to avoid collision with OnePiece gRPC (6334)
+    volumes:
+      - nectar_qdrant_data:/qdrant/storage
+
+volumes:
+  nectar_qdrant_data:

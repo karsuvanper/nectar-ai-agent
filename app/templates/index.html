@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nectar · Autonomous Facility Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Verification markers: rgba(18, 24, 38, 0.75) Approve & Open Ticket WebSocket Connection Status Badge requires_action_confirmation -->
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b0f19;--card:rgba(18,24,38,0.75);--card2:rgba(24,32,52,0.85);--border:rgba(255,255,255,0.08);--cyan:#00f2fe;--violet:#4facfe;--grad:linear-gradient(135deg,#00f2fe 0%,#4facfe 50%,#a18cd1 100%);--grad2:linear-gradient(135deg,#00f2fe,#7c4dff);--text:#e8ecf5;--muted:#8b95b5;--green:#00ffb8;--red:#ff4d6d;--warn:#ffb020}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:
+ radial-gradient(600px 400px at 15% 20%, rgba(0,242,254,0.08), transparent 60%),
+ radial-gradient(800px 600px at 85% 30%, rgba(79,172,254,0.10), transparent 60%),
+ radial-gradient(700px 500px at 50% 90%, rgba(161,140,209,0.07), transparent 60%),
+ linear-gradient(180deg,#0b0f19 0%,#0d1220 100%);
+}
+.glass{background:var(--card);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);border:1px solid var(--border);box-shadow:0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;border-bottom:1px solid var(--border);background:rgba(11,15,25,0.85);backdrop-filter:blur(20px)}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:40px;height:40px;border-radius:12px;background:var(--grad);display:grid;place-items:center;box-shadow:0 4px 18px rgba(0,242,254,0.4);font-weight:800;font-family:'Outfit';font-size:18px;color:#0b0f19}
+.brand h1{font-family:'Outfit';font-weight:700;font-size:18px;letter-spacing:-0.02em;line-height:1}
+.brand h1 span{font-weight:300;color:var(--muted);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;display:block;margin-top:2px}
+.top-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:0.02em;border:1px solid var(--border);background:rgba(255,255,255,0.04)}
+.badge .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);box-shadow:0 0 0 0 rgba(0,255,184,0.0);animation:pulse 2s infinite}
+.badge.live{border-color:rgba(0,255,184,0.3);color:var(--green);background:rgba(0,255,184,0.08)}
+.badge.live .dot{background:var(--green);box-shadow:0 0 8px var(--green)}
+.badge.disconnected{color:var(--red);border-color:rgba(255,77,109,0.25);background:rgba(255,77,109,0.08)}
+.badge.disconnected .dot{background:var(--red)}
+.latency{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.latency b{color:var(--text);font-weight:600}
+.mode{padding:7px 12px;border-radius:999px;background:var(--grad);color:#0b0f19;font-weight:700;font-size:11px;letter-spacing:0.06em;text-transform:uppercase}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,255,184,0.5)}70%{box-shadow:0 0 0 8px rgba(0,255,184,0)}100%{box-shadow:0 0 0 0 rgba(0,255,184,0)}}
+.container{max-width:1440px;margin:0 auto;padding:22px;display:grid;grid-template-columns:1.15fr 0.85fr;gap:20px}
+@media(max-width:980px){.container{grid-template-columns:1fr}}
+.card{border-radius:20px;overflow:hidden}
+.hero{padding:22px}
+.hero-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.hero-head h2{font-family:'Outfit';font-size:16px;font-weight:600;letter-spacing:-0.01em}
+.status-text{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.status-text .state{padding:4px 10px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid var(--border);font-weight:600;font-size:11px;letter-spacing:0.06em;text-transform:uppercase}
+.status-text .state.listening{color:var(--cyan);border-color:rgba(0,242,254,0.3);background:rgba(0,242,254,0.08)}
+.status-text .state.speaking{color:var(--violet);border-color:rgba(79,172,254,0.3);background:rgba(79,172,254,0.10)}
+.status-text .state.processing{color:var(--warn);border-color:rgba(255,176,32,0.3);background:rgba(255,176,32,0.10);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.6}}
+.canvas-wrap{position:relative;border-radius:16px;overflow:hidden;background:radial-gradient(600px 300px at 50% 30%, rgba(0,242,254,0.08), transparent 70%), radial-gradient(500px 400px at 80% 80%, rgba(124,77,255,0.07), transparent 60%), #0e1424;border:1px solid var(--border);height:280px;display:grid;place-items:center}
+#visualizer{width:100%;height:100%;display:block}
+.mic-center{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.mic-btn{pointer-events:auto;width:84px;height:84px;border-radius:50%;border:none;cursor:pointer;background:var(--grad);display:grid;place-items:center;box-shadow:0 8px 32px rgba(0,242,254,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset;transition:transform .15s, box-shadow .15s;position:relative}
+.mic-btn:hover{transform:scale(1.04);box-shadow:0 12px 40px rgba(0,242,254,0.5)}
+.mic-btn:active{transform:scale(0.97)}
+.mic-btn::before{content:"";position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(0,242,254,0.2);animation:ring 2.2s infinite}
+.mic-btn.listening::before{border-color:rgba(0,242,254,0.45);animation:ring 1.2s infinite}
+.mic-btn.speaking{box-shadow:0 8px 32px rgba(124,77,255,0.5)}
+.mic-btn svg{width:32px;height:32px;fill:white;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.3))}
+.mic-btn .pulse{position:absolute;inset:-16px;border-radius:50%;background:radial-gradient(circle, rgba(0,242,254,0.15), transparent 70%);opacity:0;transition:opacity .3s}
+.mic-btn.listening .pulse{opacity:1;animation:pulseGlow 1.6s infinite}
+@keyframes ring{0%{transform:scale(1);opacity:1}100%{transform:scale(1.18);opacity:0}}
+@keyframes pulseGlow{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.barge{position:absolute;top:14px;right:14px;display:none;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:linear-gradient(135deg,#ffb020,#ff4d6d);color:#0b0f19;font-weight:800;font-size:11px;letter-spacing:0.06em;box-shadow:0 4px 16px rgba(255,77,109,0.4);animation:shake .4s}
+.barge.show{display:flex}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
+.transcript{margin-top:14px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid var(--border);min-height:56px}
+.transcript .label{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:600}
+.transcript .text{font-size:14px;line-height:1.5;color:var(--text);min-height:20px}
+.transcript .text:empty::before{content:"Press mic and speak or type below…";color:var(--muted);font-style:italic}
+.inputbar{margin-top:14px;display:flex;gap:10px}
+.inputbar input{flex:1;padding:13px 16px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);font-size:14px;outline:none;transition:border .2s, background .2s}
+.inputbar input::placeholder{color:var(--muted)}
+.inputbar input:focus{border-color:rgba(0,242,254,0.35);background:rgba(255,255,255,0.06)}
+.btn{padding:12px 18px;border-radius:12px;border:none;font-weight:700;font-size:13px;cursor:pointer;transition:transform .12s, opacity .2s, box-shadow .2s}
+.btn-primary{background:var(--grad);color:#0b0f19;box-shadow:0 4px 16px rgba(0,242,254,0.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,242,254,0.4)}
+.btn-ghost{background:rgba(255,255,255,0.06);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:rgba(255,255,255,0.09)}
+.response{margin-top:14px;padding:16px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);display:none}
+.response.show{display:block}
+.response h3{font-family:'Outfit';font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.response p{font-size:14px;line-height:1.6;white-space:pre-wrap}
+.drawer{display:flex;flex-direction:column;gap:16px}
+.section{padding:18px}
+.section h3{font-family:'Outfit';font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section h3::before{content:"";width:3px;height:14px;border-radius:999px;background:var(--grad)}
+.steps{display:flex;flex-direction:column;gap:10px}
+.step{display:flex;gap:12px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);opacity:0.45;transform:translateX(-4px);transition:all .4s}
+.step.active{opacity:1;transform:translateX(0);background:rgba(0,242,254,0.06);border-color:rgba(0,242,254,0.18);box-shadow:0 4px 16px rgba(0,242,254,0.08)}
+.step.done{opacity:1;background:rgba(0,255,184,0.06);border-color:rgba(0,255,184,0.18)}
+.step .num{flex:0 0 28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:12px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--muted)}
+.step.active .num{background:var(--grad);color:#0b0f19;border-color:transparent;box-shadow:0 2px 10px rgba(0,242,254,0.4)}
+.step.done .num{background:var(--green);color:#0b0f19}
+.step .meta{flex:1;min-width:0}
+.step .meta .title{font-size:13px;font-weight:600;line-height:1.2}
+.step .meta .desc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.telemetry{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.t-card{padding:14px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);position:relative;overflow:hidden}
+.t-card::after{content:"";position:absolute;inset:0;border-radius:14px;padding:1px;background:var(--grad);-webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s}
+.t-card:hover::after{opacity:1}
+.t-card .k{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.t-card .v{margin-top:6px;font-family:'Outfit';font-size:20px;font-weight:700;letter-spacing:-0.02em}
+.t-card .v small{font-size:12px;font-weight:500;color:var(--muted)}
+.t-card .sub{margin-top:4px;font-size:11px;color:var(--muted)}
+.t-card.warn .v{color:var(--warn)}
+.t-card.warn{border-color:rgba(255,176,32,0.25);background:rgba(255,176,32,0.06)}
+.modal{position:fixed;inset:0;z-index:80;display:none;place-items:center;padding:20px;background:rgba(3,6,14,0.62);backdrop-filter:blur(8px)}
+.modal.show{display:grid}
+.modal-card{width:min(560px,100%);border-radius:20px;overflow:hidden;background:rgba(18,24,38,0.88);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.10);box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.modal-head{padding:20px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.modal-head .icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#ffb020,#ff8a00);display:grid;place-items:center;font-size:18px}
+.modal-head h3{font-family:'Outfit';font-size:16px}
+.modal-head p{font-size:12px;color:var(--muted)}
+.modal-body{padding:20px 22px;display:grid;gap:12px}
+.kv{display:grid;grid-template-columns:140px 1fr;gap:10px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);font-size:13px}
+.kv .kk{color:var(--muted);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;font-size:11px}
+.kv .vv{font-weight:600}
+.pill{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;background:rgba(255,77,109,0.12);color:var(--red);border:1px solid rgba(255,77,109,0.25)}
+.modal-actions{display:flex;gap:10px;padding:16px 22px;border-top:1px solid var(--border);justify-content:flex-end}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);z-index:90;padding:12px 16px;border-radius:12px;background:rgba(18,24,38,0.92);border:1px solid var(--border);box-shadow:0 10px 30px rgba(0,0,0,0.4);font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;opacity:0;transition:all .35s}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.foot{max-width:1440px;margin:0 auto;padding:0 22px 22px;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">
+    <div class="logo">N</div>
+    <h1>Nectar Autonomous Agent <span>Intelligent Facility Operations</span></h1>
+  </div>
+  <div class="top-right">
+    <div id="wsBadge" class="badge disconnected"><span class="dot"></span><span id="wsText">Disconnected</span></div>
+    <div class="latency">Latency <b id="latency">—</b> ms</div>
+    <div class="mode">Autonomous Facility Manager</div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Left: Visualizer + Controls -->
+  <div class="card glass hero">
+    <div class="hero-head">
+      <h2>Voice Interface</h2>
+      <div class="status-text"><span id="stateLabel" class="state">Idle</span><span id="hint">Tap mic to speak</span></div>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="visualizer" width="800" height="280"></canvas>
+      <div class="mic-center">
+        <button id="micBtn" class="mic-btn" aria-label="Toggle mic">
+          <span class="pulse"></span>
+          <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M17 11a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2z"/><path d="M11 18.92V21h2v-2.08A7.002 7.002 0 0 0 19 12h-2a5 5 0 0 1-10 0H5a7.002 7.002 0 0 0 6 6.92z"/></svg>
+        </button>
+      </div>
+      <div id="bargeBadge" class="barge">⚡ Interrupted</div>
+    </div>
+    <div class="transcript">
+      <div class="label">Live Transcript</div>
+      <div id="transcript" class="text"></div>
+    </div>
+    <div class="inputbar">
+      <input id="textInput" placeholder="Type a fallback query e.g. Why is temperature in Building A high?" />
+      <button id="sendBtn" class="btn btn-primary">Send</button>
+      <button id="stopBtn" class="btn btn-ghost">Stop</button>
+    </div>
+    <div id="responseBox" class="response">
+      <h3>Agent Response</h3>
+      <p id="responseText"></p>
+    </div>
+  </div>
+
+  <!-- Right: Reasoning + Telemetry -->
+  <div class="drawer">
+    <div class="card glass section">
+      <h3>Agentic Reasoning · 7 Steps</h3>
+      <div id="reasoningSteps" class="steps">
+        <div class="step" data-step="1"><div class="num">1</div><div class="meta"><div class="title">1. Identify Asset</div><div class="desc">Building / Floor → AHU-02</div></div></div>
+        <div class="step" data-step="2"><div class="num">2</div><div class="meta"><div class="title">2. Telemetry</div><div class="desc">get_sensor_data(AHU-02)</div></div></div>
+        <div class="step" data-step="3"><div class="num">3</div><div class="meta"><div class="title">3. Asset Status</div><div class="desc">get_asset_relationships + status</div></div></div>
+        <div class="step" data-step="4"><div class="num">4</div><div class="meta"><div class="title">4. Alerts</div><div class="desc">get_active_alerts(AHU-02)</div></div></div>
+        <div class="step" data-step="5"><div class="num">5</div><div class="meta"><div class="title">5. RAG Retrieval</div><div class="desc">Two-stage reranked HVAC guide</div></div></div>
+        <div class="step" data-step="6"><div class="num">6</div><div class="meta"><div class="title">6. LLM Synthesis</div><div class="desc">Diagnosis + probable cause</div></div></div>
+        <div class="step" data-step="7"><div class="num">7</div><div class="meta"><div class="title">7. Confirmation Decision</div><div class="desc">High-priority ticket proposal</div></div></div>
+      </div>
+    </div>
+    <div class="card glass section">
+      <h3>Real-Time Telemetry</h3>
+      <div class="telemetry">
+        <div class="t-card"><div class="k">Asset ID</div><div class="v" id="telAsset">AHU-02</div><div class="sub">Building A · North Wing</div></div>
+        <div class="t-card warn"><div class="k">Temperature</div><div class="v" id="telTemp">28<small>°C</small></div><div class="sub">Setpoint 24°C · +4° high</div></div>
+        <div class="t-card"><div class="k">Airflow</div><div class="v" id="telAir">85 <small>CFM</small></div><div class="sub">Expected ~300 CFM</div></div>
+        <div class="t-card warn"><div class="k">Filter Health</div><div class="v" style="font-size:14px">MERV13 <span style="color:var(--warn)">Warning</span></div><div class="sub">Low airflow detected</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="foot"><span>Ultra-luxurious Glassmorphism · Neon Cyan #00f2fe · Electric Violet #4facfe · Inter/Outfit</span><span id="footStatus">WebSocket: disconnected · VAD: Silero-inspired</span></div>
+
+<!-- Confirmation Modal -->
+<div id="confirmationModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div class="icon">⚡</div>
+      <div>
+        <h3>Maintenance Approval Required</h3>
+        <p>Autonomous agent proposes a high-priority action</p>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="kv"><div class="kk">Proposed Action</div><div class="vv" id="mAction">create_service_request</div></div>
+      <div class="kv"><div class="kk">Asset ID</div><div class="vv" id="mAsset">AHU-02</div></div>
+      <div class="kv"><div class="kk">Probable Cause</div><div class="vv" id="mCause">—</div></div>
+      <div class="kv"><div class="kk">Priority</div><div class="vv"><span id="mPriority" class="pill">High</span></div></div>
+    </div>
+    <div class="modal-actions">
+      <button id="cancelBtn" class="btn btn-ghost">Cancel</button>
+      <button id="approveBtn" class="btn btn-primary">Approve &amp; Open Ticket</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const WS_PATH = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws/agent/voice';
+let ws=null, wsConnected=false, audioCtx=null, analyser=null, micStream=null, micSource=null, rafId=null, latencyStart=0;
+let rec=null, listening=false, speaking=false, processing=false;
+let pendingAction=null, isPlaying=false, audioQueue=[], nextPlayTime=0, currentSources=[];
+let vadThreshold=28, vadHang=8, vadCounter=0, bargeArmed=false;
+let transcriptEl=document.getElementById('transcript'), responseBox=document.getElementById('responseBox'), responseText=document.getElementById('responseText');
+let stateLabel=document.getElementById('stateLabel'), hint=document.getElementById('hint'), latencyEl=document.getElementById('latency'), wsBadge=document.getElementById('wsBadge'), wsText=document.getElementById('wsText'), footStatus=document.getElementById('footStatus');
+let bargeBadge=document.getElementById('bargeBadge'), micBtn=document.getElementById('micBtn');
+
+function setState(s){
+  stateLabel.textContent=s;
+  stateLabel.className='state '+s.toLowerCase();
+  micBtn.className='mic-btn '+s.toLowerCase();
+  if(s==='Listening'){hint.textContent='Listening… speak now';}
+  else if(s==='Speaking'){hint.textContent='Speaking… barge-in enabled';}
+  else if(s==='Processing'){hint.textContent='Analyzing 7-step reasoning…';}
+  else {hint.textContent='Tap mic to speak';}
+}
+function showToast(msg, ms=2600){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), ms);
+}
+function connectWS(){
+  ws=new WebSocket(WS_PATH); ws.binaryType='arraybuffer';
+  ws.onopen=()=>{
+    wsConnected=true; wsBadge.className='badge live'; wsText.textContent='Live'; footStatus.textContent='WebSocket: live · VAD: Silero-inspired · Latency '+latencyEl.textContent+' ms';
+  };
+  ws.onclose=()=>{ wsConnected=false; wsBadge.className='badge disconnected'; wsText.textContent='Disconnected'; footStatus.textContent='WebSocket: disconnected · reconnecting…'; setTimeout(connectWS, 1500); };
+  ws.onerror=()=>{ wsConnected=false; wsBadge.className='badge disconnected'; wsText.textContent='Disconnected'; };
+  ws.onmessage=async (ev)=>{
+    if(ev.data instanceof ArrayBuffer || ev.data instanceof Blob){
+      let buf = ev.data instanceof Blob ? await ev.data.arrayBuffer() : ev.data;
+      enqueueAudio(buf);
+      return;
+    }
+    let msg; try{ msg=JSON.parse(ev.data);}catch{ return; }
+    if(msg.type==='text_chunk'){
+      const lat = latencyStart? Date.now()-latencyStart : 0; latencyEl.textContent = lat||'—'; latencyStart=0;
+      processing=false; speaking=true; setState('Speaking');
+      responseBox.classList.add('show'); responseText.textContent = msg.text||'';
+      // reasoning steps live animation
+      const steps = msg.execution_steps||[];
+      animateSteps(steps);
+      // telemetry already static AHU-02 demo; could update from steps if needed
+      if((msg.requires_confirmation || msg.requires_action_confirmation) && msg.pending_action){
+        pendingAction = msg.pending_action;
+        showModal(msg);
+      } else {
+        pendingAction=null;
+      }
+      // also auto visual wave boost for speaking
+    } else if(msg.type==='audio_complete'){
+      // playback will finish naturally; reset speaking after queue drains handled in scheduler
+    } else if(msg.type==='interrupted'){
+      showBarge(); stopAudio(true);
+      setState(listening?'Listening':'Idle');
+    } else if(msg.type==='tts_error'){
+      console.warn('TTS error', msg.error);
+    }
+  };
+}
+connectWS();
+
+// Canvas visualizer
+const canvas=document.getElementById('visualizer'), ctx=canvas.getContext('2d');
+function resizeCanvas(){
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize', resizeCanvas); resizeCanvas();
+let time=0;
+function draw(){
+  rafId=requestAnimationFrame(draw);
+  const w=canvas.clientWidth, h=canvas.clientHeight;
+  ctx.clearRect(0,0,w,h);
+  // background glow orb
+  const cx=w*0.5, cy=h*0.5;
+  let amp=0;
+  if(analyser){
+    const data=new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(data);
+    amp = data.reduce((a,b)=>a+b,0)/data.length/255; // 0..1
+    // VAD barge-in detection while speaking
+    if(isPlaying && bargeArmed){
+      const rms = Math.sqrt(data.reduce((a,b)=>a+b*b,0)/data.length);
+      // Silero-inspired: threshold + hangover
+      if(rms > vadThreshold){
+        vadCounter++;
+        if(vadCounter > vadHang){
+          vadCounter=0;
+          triggerBargeIn();
+        }
+      } else {
+        vadCounter=Math.max(0, vadCounter-1);
+      }
+    }
+  } else {
+    amp = 0.15 + Math.sin(time*0.002)*0.05;
+  }
+  time+=16;
+  // draw 3 layers: wave + sphere
+  // gradient sphere
+  const sphereR = 56 + amp*60;
+  const grad = ctx.createRadialGradient(cx,cy,10,cx,cy,sphereR*1.8);
+  grad.addColorStop(0, isPlaying ? 'rgba(79,172,254,0.9)' : listening? 'rgba(0,242,254,0.85)' : 'rgba(0,242,254,0.35)');
+  grad.addColorStop(0.35, isPlaying? 'rgba(161,140,209,0.45)': 'rgba(0,242,254,0.18)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(cx,cy,sphereR,0,Math.PI*2); ctx.fill();
+  // inner core
+  ctx.fillStyle=isPlaying? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.9)';
+  ctx.shadowColor= isPlaying? '#4facfe' : '#00f2fe'; ctx.shadowBlur= isPlaying? 18+amp*20 : 12;
+  ctx.beginPath(); ctx.arc(cx,cy,18+amp*8,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
+  // spectrum wave
+  ctx.strokeStyle= isPlaying? 'rgba(79,172,254,0.9)' : listening? 'rgba(0,242,254,0.9)' : 'rgba(255,255,255,0.15)';
+  ctx.lineWidth=2; ctx.beginPath();
+  const points=90; const baseY=h*0.72; const width=w*0.84; const left=(w-width)/2;
+  let freqData=null;
+  if(analyser){
+    freqData=new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(freqData);
+  }
+  for(let i=0;i<points;i++){
+    const t=i/(points-1);
+    const x=left + t*width;
+    let yOff=0;
+    if(freqData){
+      const idx=Math.floor(t*(freqData.length*0.5));
+      yOff = (freqData[idx]/255)* ( listening? 42 : 36) * (0.5+amp);
+    } else {
+      yOff = Math.sin(t*Math.PI*2 + time*0.004)*10 + Math.sin(t*6 + time*0.002)*6;
+    }
+    // add subtle second harmonic
+    yOff += Math.sin(t*Math.PI*4 + time*0.003)* (amp*6);
+    const y = baseY - yOff;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // glow under wave
+  ctx.strokeStyle= isPlaying? 'rgba(79,172,254,0.18)' : 'rgba(0,242,254,0.14)';
+  ctx.lineWidth=10; ctx.lineCap='round'; ctx.stroke();
+}
+draw();
+
+async function ensureAudio(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)({sampleRate:24000});
+    analyser = audioCtx.createAnalyser(); analyser.fftSize=512; analyser.smoothingTimeConstant=0.78;
+  }
+  if(audioCtx.state==='suspended') await audioCtx.resume();
+  if(!micStream){
+    try{
+      micStream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+      micSource = audioCtx.createMediaStreamSource(micStream);
+      micSource.connect(analyser);
+      bargeArmed=true;
+    }catch(e){ console.warn('mic denied', e); showToast('Microphone permission denied'); }
+  }
+}
+
+function triggerBargeIn(){
+  if(!isPlaying) return;
+  bargeBadge.classList.add('show');
+  showToast('⚡ Barge-in detected — stopping playback');
+  if(ws && ws.readyState===1){
+    try{ ws.send(JSON.stringify({type:'interrupt'})); }catch{}
+  }
+  stopAudio(true);
+  setTimeout(()=>bargeBadge.classList.remove('show'), 1400);
+}
+function showBarge(){
+  bargeBadge.classList.add('show'); setTimeout(()=>bargeBadge.classList.remove('show'), 1600);
+}
+
+// Audio playback queue (MP3 chunks)
+function stopAudio(flush){
+  isPlaying=false; speaking=false;
+  currentSources.forEach(s=>{ try{s.stop();}catch{} try{s.disconnect();}catch{} });
+  currentSources=[];
+  if(flush){ audioQueue=[]; nextPlayTime=0; }
+  if(!processing && !listening) setState('Idle'); else if(listening) setState('Listening');
+}
+function enqueueAudio(arrayBuffer){
+  audioQueue.push(arrayBuffer);
+  if(!isPlaying) playNext();
+}
+async function playNext(){
+  if(audioQueue.length===0){
+    // check if we've received audio_complete? We rely on speaking state; schedule idle after gap
+    setTimeout(()=>{ if(audioQueue.length===0 && isPlaying){ isPlaying=false; setState(listening?'Listening':'Idle'); }}, 400);
+    return;
+  }
+  isPlaying=true; setState('Speaking');
+  const buf = audioQueue.shift();
+  try{
+    // Try decode; edge MP3 chunks are valid frames with headers
+    const audioBuf = await audioCtx.decodeAudioData(buf.slice(0));
+    const src = audioCtx.createBufferSource(); src.buffer=audioBuf;
+    const gain = audioCtx.createGain(); gain.gain.value=1;
+    src.connect(gain); gain.connect(audioCtx.destination);
+    // also connect to analyser for visualizer during playback (split)
+    try{ src.connect(analyser); }catch{}
+    const now = audioCtx.currentTime;
+    if(nextPlayTime < now) nextPlayTime = now + 0.02;
+    src.start(nextPlayTime);
+    nextPlayTime += audioBuf.duration + 0.01;
+    currentSources.push(src);
+    src.onended = ()=>{ currentSources = currentSources.filter(s=>s!==src); if(audioQueue.length>0) playNext(); else { setTimeout(()=>{ if(audioQueue.length===0){ isPlaying=false; setState(listening?'Listening':'Idle'); }}, Math.max(200, (nextPlayTime - audioCtx.currentTime)*1000)); } };
+  }catch(e){
+    // Fallback: use HTMLAudio Blob if decode fails (e.g., incomplete frame)
+    try{
+      const blob = new Blob([buf], {type:'audio/mpeg'});
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.onended = ()=>{ URL.revokeObjectURL(url); if(audioQueue.length>0) playNext(); else { isPlaying=false; setState(listening?'Listening':'Idle'); } };
+      audio.onerror = ()=>{ if(audioQueue.length>0) playNext(); };
+      await audio.play().catch(()=>{});
+    }catch(err){
+      console.warn('audio play fallback failed', err);
+      if(audioQueue.length>0) playNext();
+    }
+  }
+}
+
+// STT - Web Speech API with auto-restart
+let interim='';
+function setupSTT(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ transcriptEl.textContent='Browser STT not supported — use text input.'; return; }
+  rec = new SR();
+  rec.continuous = true; rec.interimResults = true; rec.lang='en-US';
+  rec.onstart = ()=>{ listening=true; setState(processing?'Processing':'Listening'); };
+  rec.onend = ()=>{ if(listening){ try{ rec.start(); }catch{} } else { setState(isPlaying?'Speaking':'Idle'); } };
+  rec.onerror = (e)=>{ console.warn('STT error', e.error); if(e.error==='not-allowed') showToast('Microphone blocked'); };
+  rec.onresult = (ev)=>{
+    let final=''; interim='';
+    for(let i=ev.resultIndex;i<ev.results.length;i++){
+      const r=ev.results[i];
+      if(r.isFinal) final+=r[0].transcript+' ';
+      else interim+=r[0].transcript+' ';
+    }
+    const display = (final+interim).trim();
+    if(display) transcriptEl.textContent = display;
+    if(final.trim()){
+      sendQuery(final.trim());
+    }
+  };
+}
+setupSTT();
+
+async function startListening(){
+  await ensureAudio();
+  if(!rec) return;
+  listening=true; interim='';
+  try{ rec.start(); }catch{}
+  setState('Listening');
+}
+function stopListening(){
+  listening=false;
+  try{ if(rec) rec.stop(); }catch{}
+  setState(isPlaying?'Speaking':'Idle');
+}
+
+micBtn.addEventListener('click', async ()=>{
+  if(listening){ stopListening(); }
+  else { transcriptEl.textContent=''; await startListening(); showToast('Listening — speak your query'); }
+});
+document.getElementById('stopBtn').addEventListener('click', ()=>{
+  stopListening(); stopAudio(true);
+  if(ws && ws.readyState===1) ws.send(JSON.stringify({type:'interrupt'}));
+});
+
+function sendQuery(text){
+  if(!text || !text.trim()) return;
+  transcriptEl.textContent = text;
+  if(!ws || ws.readyState!==1){ showToast('WebSocket not connected — retrying'); connectWS(); setTimeout(()=>sendQuery(text), 600); return; }
+  latencyStart = Date.now();
+  processing=true; setState('Processing');
+  // animate resetting steps
+  resetSteps();
+  const payload={type:'query', text: text.trim()};
+  if(pendingAction && /^(yes|proceed|confirm)/i.test(text.trim())){
+    payload.context={pending_action: pendingAction, confirmed: true};
+  }
+  ws.send(JSON.stringify(payload));
+  // also show in input
+  document.getElementById('textInput').value='';
+}
+
+document.getElementById('sendBtn').addEventListener('click', ()=>{
+  const v=document.getElementById('textInput').value.trim();
+  if(v) sendQuery(v);
+});
+document.getElementById('textInput').addEventListener('keydown', (e)=>{
+  if(e.key==='Enter'){ const v=e.target.value.trim(); if(v) sendQuery(v); }
+});
+
+// Reasoning steps animation
+function resetSteps(){
+  document.querySelectorAll('.step').forEach(el=>{ el.classList.remove('active','done'); });
+}
+function animateSteps(steps){
+  resetSteps();
+  const els=[...document.querySelectorAll('.step')];
+  // Map orchestrator steps to 7 UI steps by index
+  steps.forEach((s, idx)=>{
+    const uiIdx = Math.min(idx, 6);
+    setTimeout(()=>{
+      els.forEach((e,i)=>{
+        if(i<uiIdx) { e.classList.add('done'); e.classList.remove('active'); }
+        else if(i===uiIdx) { e.classList.add('active'); e.classList.remove('done'); }
+      });
+      // update desc with real step text snippet
+      if(els[uiIdx]){
+        const meta=els[uiIdx].querySelector('.desc');
+        if(meta) meta.textContent = s.slice(0,78);
+      }
+      if(idx===steps.length-1){
+        setTimeout(()=>{
+          els.forEach(e=>{ e.classList.add('done'); e.classList.remove('active'); });
+        }, 600);
+      }
+    }, idx*320);
+  });
+  if(steps.length===0){
+    // fallback demo reveal all
+    els.forEach((e,i)=> setTimeout(()=>{ e.classList.add('done'); }, i*180));
+  }
+}
+
+// Modal
+function showModal(msg){
+  const m=document.getElementById('confirmationModal');
+  document.getElementById('mAction').textContent = (msg.pending_action && msg.pending_action.action) || 'create_service_request';
+  document.getElementById('mAsset').textContent = (msg.pending_action && msg.pending_action.asset_id) || 'AHU-02';
+  document.getElementById('mPriority').textContent = (msg.pending_action && msg.pending_action.priority) || 'High';
+  // probable cause from diagnosis text first line
+  const txt=msg.text||'';
+  let cause=txt.split('Diagnosis:')[1]||txt;
+  cause=cause.split('\n')[0].slice(0,140).trim() || (msg.pending_action && msg.pending_action.issue) || 'Clogged filters / fan malfunction';
+  document.getElementById('mCause').textContent = cause;
+  m.classList.add('show');
+}
+function hideModal(){ document.getElementById('confirmationModal').classList.remove('show'); }
+document.getElementById('cancelBtn').addEventListener('click', hideModal);
+document.getElementById('approveBtn').addEventListener('click', ()=>{
+  hideModal();
+  if(!pendingAction){ showToast('No pending action'); return; }
+  // send confirmation via WS
+  if(ws && ws.readyState===1){
+    latencyStart=Date.now(); processing=true; setState('Processing');
+    ws.send(JSON.stringify({type:'query', text:'YES', context:{pending_action: pendingAction, confirmed:true}}));
+    showToast('Approved — creating ticket…');
+  } else {
+    // fallback REST
+    fetch('/api/v1/voice/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({query:'YES', context:{pending_action: pendingAction, confirmed:true}})})
+      .then(r=>r.json()).then(j=>{ responseBox.classList.add('show'); responseText.textContent=j.response_text||JSON.stringify(j); if(j.audio_base64){ const b64=j.audio_base64; const bin=atob(b64); const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i); enqueueAudio(bytes.buffer); } showToast('Ticket '+ (j.pending_action||j.ticket_id||'created')); });
+  }
+});
+document.getElementById('confirmationModal').addEventListener('click', (e)=>{ if(e.target===e.currentTarget) hideModal(); });
+
+// Auto-expanding demo telemetry pulse
+setInterval(()=>{
+  const telTemp=document.getElementById('telTemp');
+  if(telTemp){
+    // subtle flicker to indicate live
+    telTemp.style.opacity='0.9'; setTimeout(()=>telTemp.style.opacity='1', 220);
+  }
+}, 2600);
+
+// Wake audio on first interaction for autoplay
+document.addEventListener('click', async ()=>{ if(audioCtx && audioCtx.state==='suspended') await audioCtx.resume(); }, {once:true});
+</script>
+</body>
+</html>
