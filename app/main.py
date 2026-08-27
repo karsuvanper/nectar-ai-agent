@@ -35,7 +35,10 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"Warmup warning: {e}")
     
-    yield  # Essential: yield control back to FastAPI to keep server running
+    try:
+        yield
+    finally:
+        print("Application shutting down...")
 
 app = FastAPI(
     title="Nectar Intelligent Facility Operations AI Agent",
