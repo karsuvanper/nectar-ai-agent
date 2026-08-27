@@ -3,8 +3,7 @@ title: Nectar Autonomous Voice Agent
 emoji: 🎙️
 colorFrom: blue
 colorTo: indigo
-sdk: gradio
-sdk_version: 4.44.0
+sdk: static
 app_file: app.py
 pinned: false
 ---
