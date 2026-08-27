@@ -4,7 +4,8 @@ from pathlib import Path
 
 from fastapi import FastAPI, Body, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse, HTMLResponse
 from app.config import config
 from app.router.intent_router import route_request
 from app.router.models import RouteDecision
@@ -60,6 +61,36 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Ensure static directory exists and contains index.html for Docker /static mount
+# Supports both local run (WORKDIR /app) and installed layout
+import shutil as _shutil
+_static_dir = Path("static")
+_app_static = Path("app/static")
+_templates_index = Path("app/templates/index.html")
+try:
+    _static_dir.mkdir(parents=True, exist_ok=True)
+    # Populate static/index.html if missing or empty from known sources
+    _target = _static_dir / "index.html"
+    if not _target.exists() or _target.stat().st_size == 0:
+        # Prefer app/templates/index.html (35106 bytes), fallback to app/static/index.html if populated
+        for _src in [_templates_index, _app_static / "index.html"]:
+            if _src.exists() and _src.stat().st_size > 0:
+                _shutil.copy(str(_src), str(_target))
+                break
+        # Also ensure app/static has the file for consistency
+        if _app_static.exists():
+            _app_target = _app_static / "index.html"
+            if (not _app_target.exists() or _app_target.stat().st_size == 0) and _target.exists() and _target.stat().st_size > 0:
+                _shutil.copy(str(_target), str(_app_target))
+except Exception:
+    pass
+
+app.mount("/static", StaticFiles(directory="static", html=True), name="static")
+
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/static/index.html")
 
 # Thin API wrappers that delegate to the centralized MCP tool functions.
 # Business logic lives in app/mcp_tools/telemetry.py and app/mcp_tools/actions.py.
@@ -136,19 +167,6 @@ def api_update_service_request(
 def api_agent_chat(request: AgentRequest):
     response = process_agent_query(request)
     return response
-
-@app.get("/", response_class=HTMLResponse)
-async def serve_index():
-    """Serve ultra-luxurious glassmorphism UI."""
-    candidates = [
-        Path(__file__).parent / "templates" / "index.html",
-        Path("app/templates/index.html"),
-        Path("app/static/index.html"),
-    ]
-    for p in candidates:
-        if p.is_file():
-            return HTMLResponse(content=p.read_text(encoding="utf-8"), status_code=200)
-    return HTMLResponse(content="<h1>Nectar UI not found</h1>", status_code=404)
 
 
 # Voice router: exposes /ws/agent/voice and /api/v1/voice/chat
