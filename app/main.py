@@ -26,19 +26,25 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup warmup logic
+    # Startup warmup logic with explicit progress logging for Docker/HF model fetch
+    print("Loading FastEmbed models...", flush=True)
     try:
         from app.rag.vector_store import warmup_embedding
         from app.rag.retriever import warmup_reranker
+        print("Initializing embedding model (BAAI/bge-small-en-v1.5)...", flush=True)
         warmup_embedding()
+        print("Embedding model ready.", flush=True)
+        print("Initializing reranker model (cross-encoder/ms-marco-MiniLM-L-6-v2)...", flush=True)
         warmup_reranker()
+        print("Reranker model ready.", flush=True)
+        print("All FastEmbed models loaded successfully.", flush=True)
     except Exception as e:
-        print(f"Warmup warning: {e}")
+        print(f"Warmup warning: {e}", flush=True)
     
     try:
         yield
     finally:
-        print("Application shutting down...")
+        print("Application shutting down...", flush=True)
 
 app = FastAPI(
     title="Nectar Intelligent Facility Operations AI Agent",

@@ -23,5 +23,5 @@ COPY . .
 # Expose FastAPI Port
 EXPOSE 8000
 
-# Start FastAPI application with live hot-reloading
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Start FastAPI application without reload in production/docker to prevent startup hang on HF model fetch
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-reload"]
