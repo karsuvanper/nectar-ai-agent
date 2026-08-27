@@ -7,7 +7,11 @@ from qdrant_client.models import VectorParams, Distance, PointStruct
 
 logger = logging.getLogger(__name__)
 
-QDRANT_HOST = os.getenv("QDRANT_HOST", "").strip()
+# Force default QDRANT_HOST fallback to "memory" if host is "localhost" or empty inside docker/fallback logic
+qdrant_host = os.getenv("QDRANT_HOST", "memory")
+if qdrant_host.strip() in ["localhost", "127.0.0.1", ""]:
+    qdrant_host = "memory"
+QDRANT_HOST = qdrant_host.strip()
 QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333")) if os.getenv("QDRANT_PORT") else 6333
 
 
@@ -19,8 +23,8 @@ def _create_qdrant_client():
     Catch connection errors gracefully so startup never crashes.
     """
     host_lower = (QDRANT_HOST or "").strip().lower()
-    # In-memory cases: empty, localhost, memory, :memory:
-    if not host_lower or host_lower in ("localhost", "memory", ":memory:"):
+    # In-memory cases: empty, localhost, 127.0.0.1, memory, :memory:
+    if not host_lower or host_lower in ("localhost", "127.0.0.1", "memory", ":memory:"):
         try:
             logger.info("QDRANT_HOST='%s' -> using in-memory Qdrant (QdrantClient(':memory:'))", QDRANT_HOST)
             return QdrantClient(":memory:")
