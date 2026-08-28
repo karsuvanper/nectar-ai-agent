@@ -857,6 +857,8 @@ python evaluations/evaluate_rag.py
 | **Context Recall** | **0.3801** | Coverage of ground truth by reranked contexts (heuristic = `GT tokens ∩ contexts / GT tokens`) |
 | **Evaluation Mode** | `heuristic_fallback` | Falls back to deterministic heuristics if `ragas` LLM (OpenAI) unavailable; real `ragas` metrics auto-used when `langchain_core` + OpenAI key present |
 
+![RAGAS Evaluation Metrics](evaluations/metrics_chart.png)
+
 Full per-question breakdown in `evaluations/metrics_summary.json:22-111` (route, routing_confidence, reranker_precision_boost, faithfulness, answer_relevancy, context_precision, context_recall).
 
 **Key finding:** Cross-Encoder reranking provides +0.3769 avg precision boost over raw `bge-small-en` vector search; faithfulness remains >0.47 avg with strict grounded prompt. `evaluations/ragas_report.csv:1-33` preserves exact pipeline outputs for audit.
