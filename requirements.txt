@@ -13,3 +13,6 @@ websockets>=12.0
 edge-tts>=6.1.9
 kokoro-onnx>=0.3.1
 onnxruntime>=1.17.0
+ragas>=0.2.0
+datasets>=2.19.0
+pandas>=2.0.0

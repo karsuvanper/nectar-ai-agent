@@ -1,0 +1,112 @@
+{
+  "num_questions": 8,
+  "avg_faithfulness": 0.4703,
+  "avg_answer_relevance": 0.6469,
+  "avg_answer_relevancy": 0.6469,
+  "avg_context_precision": 0.4583,
+  "avg_context_recall": 0.3801,
+  "avg_routing_confidence": 0.9,
+  "avg_reranker_precision_boost": 0.3769,
+  "min_faithfulness": 0.0,
+  "max_faithfulness": 0.7097,
+  "evaluation_mode": "heuristic_fallback",
+  "pipeline": {
+    "embedding_model": "BAAI/bge-small-en-v1.5",
+    "vector_db": "Qdrant (hvac_knowledge, 384-dim, cosine)",
+    "retriever_top_k": 15,
+    "reranker_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+    "reranked_top_k": 3,
+    "llm": "dots-studio/dots-3-note-preview:free",
+    "router_model": "dots-studio/dots-3-note-preview:free"
+  },
+  "per_question": [
+    {
+      "question": "What is the standard chilled water outlet temperature for Chiller-01 and its approved operating range?",
+      "category": "chiller_specs",
+      "route": "RAG",
+      "routing_confidence": 0.9,
+      "reranker_precision_boost": 3.910897717697133,
+      "faithfulness": 0.704,
+      "answer_relevancy": 0.6927,
+      "context_precision": 1.0,
+      "context_recall": 0.56
+    },
+    {
+      "question": "How do you troubleshoot low airflow in an AHU? List steps for filter condition and belt tension checks.",
+      "category": "ahu_troubleshooting",
+      "route": "RAG",
+      "routing_confidence": 0.9,
+      "reranker_precision_boost": -1.5864015283500277,
+      "faithfulness": 0.3039,
+      "answer_relevancy": 0.6491,
+      "context_precision": 0.3333,
+      "context_recall": 0.2857
+    },
+    {
+      "question": "What is the filter replacement threshold for MERV13 filters in AHU-02 and its initial pressure drop?",
+      "category": "maintenance",
+      "route": "RAG",
+      "routing_confidence": 0.9,
+      "reranker_precision_boost": 1.287344943946549,
+      "faithfulness": 0.4889,
+      "answer_relevancy": 0.6983,
+      "context_precision": 1.0,
+      "context_recall": 0.6207
+    },
+    {
+      "question": "Describe the Lockout/Tagout (LOTO) isolation procedure for HVAC maintenance.",
+      "category": "safety_loto",
+      "route": "RAG",
+      "routing_confidence": 0.9,
+      "reranker_precision_boost": 1.1822056600198954,
+      "faithfulness": 0.6333,
+      "answer_relevancy": 0.6481,
+      "context_precision": 0.3333,
+      "context_recall": 0.3176
+    },
+    {
+      "question": "What is the escalation contact for Level 1 immediate HVAC issue and response time targets for maintenance tickets?",
+      "category": "facility_policies",
+      "route": "RAG",
+      "routing_confidence": 0.9,
+      "reranker_precision_boost": -0.6978735854555288,
+      "faithfulness": 0.7097,
+      "answer_relevancy": 0.7059,
+      "context_precision": 0.3333,
+      "context_recall": 0.4645
+    },
+    {
+      "question": "What are the condenser water setpoints for Chiller-01?",
+      "category": "chiller_specs",
+      "route": "MCP",
+      "routing_confidence": 0.9,
+      "reranker_precision_boost": 0.986823281818302,
+      "faithfulness": 0.4459,
+      "answer_relevancy": 0.621,
+      "context_precision": 0.3333,
+      "context_recall": 0.4138
+    },
+    {
+      "question": "What is the AHU-02 specification for capacity, static pressure, and motor?",
+      "category": "equipment_specs",
+      "route": "RAG",
+      "routing_confidence": 0.9,
+      "reranker_precision_boost": -1.233136471650785,
+      "faithfulness": 0.4767,
+      "answer_relevancy": 0.7055,
+      "context_precision": 0.3333,
+      "context_recall": 0.2927
+    },
+    {
+      "question": "How to handle refrigerant leak safety protocol for R-134a systems?",
+      "category": "safety_refrigerant",
+      "route": "RAG",
+      "routing_confidence": 0.9,
+      "reranker_precision_boost": -0.8342668516217946,
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.4548,
+      "context_precision": 0.0,
+      "context_recall": 0.0857
+    }
+  ]
+}
